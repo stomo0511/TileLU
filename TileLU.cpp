@@ -15,7 +15,7 @@
 
 using namespace std;
 
-void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& L, PivMatrix& P );
+void tileLU( TMatrix& A, TMatrix& L, PivMatrix& P );
 
 int main(int argc, const char * argv[])
 {
@@ -63,7 +63,7 @@ int main(int argc, const char * argv[])
 	
 	//////////////////////////////////////////////////////////////////////
 	// tile QR variants
-	tileLU(MT,NT,A,L,P);
+	tileLU( A, L, P );
 	//////////////////////////////////////////////////////////////////////
 	
 	// Timer stop
@@ -81,7 +81,7 @@ int main(int argc, const char * argv[])
 	
 	//////////////////////////////////////////////////////////////////////
 	// tile QR variants
-	tileLU(MT,NT,A,L,P);
+	tileLU(A,L,P);
 	//////////////////////////////////////////////////////////////////////
 	
 	// Timer stop

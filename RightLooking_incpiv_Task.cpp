@@ -17,8 +17,11 @@
 
 using namespace std;
 
-void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& L, PivMatrix& P )
+void tileLU( TMatrix& A, TMatrix& L, PivMatrix& P )
 {
+	const int MT = A.mt();
+	const int NT = A.nt();
+
 	//////////////////////////////////////////////////////////////////////
 	// List Item
 	int **Ap;

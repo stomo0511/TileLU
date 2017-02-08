@@ -1,7 +1,7 @@
 //
-//  RightLooking
+//  Getrs RightLooking Tile version
 //
-//  Created by T. Suzuki on 2017/02/07.
+//  Created by T. Suzuki on 2017/02/08.
 //  Copyright (c) 2013 T. Suzuki. All rights reserved.
 //
 
@@ -17,31 +17,28 @@
 
 using namespace std;
 
-void tileLU( TMatrix& A, TMatrix& L, PivMatrix& P )
+void tileGetrs( TMatrix& A, TMatrix& L, PivMatrix& P, TMatrix& B )
 {
-	const int MT = A.mt();
-	const int NT = A.nt();
+	const int aMT = A.mt();
+	const int aNT = A.nt();
+	const int bNT = B.nt();
+
+	assert(aMT == B.mt());
+
+	//////////////////////////////////////////////////////////////////////
+	// trsmpl: triangular solve with unit lower triangular matrix (L)
+
 
 	//////////////////////////////////////////////////////////////////////
 	// Right Looking tile LU with incremental pivoting
-	for (int k=0; k < min(MT,NT); k++ )
+	for (int k=0; k < min(aMT,aNT); k++ )
 	{
 		#pragma omp parallel
 		{
-			#pragma omp single
-			{
-				GETRF( A(k,k), P(k,k) );
-
-				#ifdef DEBUG
-                #pragma omp critical
-				cout << "GETRF(" << k << "," << k << "," << k << ")\n";
-				#endif
-			}
-
 			#pragma omp for
-			for (int j=k+1; j < NT; j++)
+			for (int j=k; j < bNT; j++)
 			{
-				GESSM( A(k,k), A(k,j), P(k,k) );
+				GESSM( A(k,k), B(k,j), P(k,k) );
 
 				#ifdef DEBUG
 				#pragma omp critical
@@ -49,22 +46,12 @@ void tileLU( TMatrix& A, TMatrix& L, PivMatrix& P )
 				#endif
 			} // j-LOOP END
 
-			for (int i=k+1; i < MT; i++)
+			for (int i=k+1; i < aMT; i++)
 			{
-				#pragma omp single
-				{
-					TSTRF( A(k,k), A(i,k), L(i,k), P(i,k));
-
-					#ifdef DEBUG
-                    #pragma omp critical
-					cout << "TSTRF(" << i << "," << k << "," << k << ")\n";
-					#endif
-				}
-
 				#pragma omp for
-				for (int j=k+1; j < NT; j++)
+				for (int j=k+1; j < bNT; j++)
 				{
-					SSSSM( L(i,k), A(i,k), A(k,j), A(i,j), P(i,k) );
+					SSSSM( L(i,k), A(i,k), B(k,j), B(i,j), P(i,k) );
 
 					#ifdef DEBUG
 					#pragma omp critical
@@ -74,4 +61,8 @@ void tileLU( TMatrix& A, TMatrix& L, PivMatrix& P )
 			} // i-LOOP END
 		} // parallel section END
 	} // k-LOOP END
+
+	//////////////////////////////////////////////////////////////////////
+	// trsm: triangular solve with upper triangular matrix (U)
+
 }
