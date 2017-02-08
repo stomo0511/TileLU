@@ -1,7 +1,7 @@
 /*
- * RightLooking_Task.cpp
+ * RightLooking_incpiv_Task.cpp
  *
- *  Created on: 2016/03/31
+ *  Created on: 2017/02/08
  *      Author: stomo
  */
 
@@ -11,12 +11,13 @@
 #include <algorithm>
 #include <omp.h>
 
-#include <CoreBlasTile.hpp>
 #include <TMatrix.hpp>
+#include <PivMatrix.hpp>
+#include <CoreBlasTile.hpp>
 
 using namespace std;
 
-void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
+void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& L, PivMatrix& P )
 {
 	//////////////////////////////////////////////////////////////////////
 	// List Item
@@ -27,7 +28,8 @@ void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
 		Ap[i] = (int *)malloc(sizeof(int) * NT);
 
 	//////////////////////////////////////////////////////////////////////
-	// Right Looking tile QR Task version
+	// Right Looking tile LU with incremental pivoting
+	// Task version
 	#pragma omp parallel
 	{
 		#pragma omp single
@@ -36,7 +38,7 @@ void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
 			{
 				#pragma omp task depend(inout:Ap[k][k])
 				{
-					GEQRT( A(k,k), T(k,k) );
+					GETRF( A(k,k), P(k,k) );
 
 					#ifdef DEBUG
 					#pragma omp critical
@@ -48,7 +50,7 @@ void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
 				{
 					#pragma omp task depend(in:Ap[k][k]) depend(inout:Ap[k][j])
 					{
-						LARFB( PlasmaLeft, PlasmaTrans, A(k,k), T(k,k), A(k,j) );
+						GESSM( A(k,k), A(k,j), P(k,k) );
 
 						#ifdef DEBUG
 						#pragma omp critical
@@ -61,7 +63,7 @@ void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
 				{
 					#pragma omp task depend(inout:Ap[k][k]) depend(out:Ap[i][k])
 					{
-						TSQRT( A(k,k), A(i,k), T(i,k) );
+						TSTRF( A(k,k), A(i,k), L(i,k), P(i,k) );
 
 						#ifdef DEBUG
 						#pragma omp critical
@@ -73,7 +75,7 @@ void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& T )
 					{
 						#pragma omp task depend(in:Ap[i][k]) depend(inout:Ap[k][j],Ap[i][j])
 						{
-							SSRFB( PlasmaLeft, PlasmaTrans, A(i,k), T(i,k), A(k,j), A(i,j) );
+							SSSSM( L(i,k), A(i,k), A(k,j), A(i,j), P(i,k) );
 
 							#ifdef DEBUG
 							#pragma omp critical

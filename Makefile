@@ -15,6 +15,7 @@ PLASMA_INC_DIR = $(PLASMA_ROOT)/include
 PLASMA_LIB_DIR = $(PLASMA_ROOT)/lib
 PLASMA_LIBS = -lplasma -lcoreblas -lquark 
 #
+<<<<<<< HEAD
 TMATRIX_ROOT = /Users/stomo/WorkSpace_New/TileAlgorithm/TileMatrix
 TMATRIX_INC_DIR = $(TMATRIX_ROOT)
 TMATRIX_LIB_DIR = $(TMATRIX_ROOT)
@@ -33,6 +34,26 @@ CXXFLAGS =	-DDEBUG -g -I$(TMATRIX_INC_DIR) -I$(PLASMA_INC_DIR) -I$(TMATRIX_INC_D
 
 RLOBJS = TileLU.o RightLooking_incpiv.o
 RTOBJS = TileLU.o RightLooking_Task.o
+=======
+TMATRIX_ROOT = /Users/stomo/WorkSpace/TileAlgorithm/TileMatrix
+TMATRIX_INC_DIR = $(TMATRIX_ROOT)
+TMATRIX_LIB_DIR = $(TMATRIX_ROOT)
+TMATRIX_LIBS = -lTileMatrix
+#
+COREBLAS_ROOT = /Users/stomo/WorkSpace/TileAlgorithm/CoreBlas
+COREBLAS_INC_DIR = $(COREBLAS_ROOT)
+COREBLAS_LIB_DIR = $(COREBLAS_ROOT)
+COREBLAS_LIBS = -lCoreBlasTile
+#
+CXX =	/usr/local/bin/g++ -fopenmp
+# for DEBUG
+CXXFLAGS =	-DDEBUG -g -I$(TMATRIX_INC_DIR) -I$(PLASMA_INC_DIR) -I$(TMATRIX_INC_DIR) -I$(COREBLAS_INC_DIR)
+# for Performance evaluation
+#CXXFLAGS =	-O2 -I$(BLAS_INC_DIR) -I$(PLASMA_INC_DIR) -I$(TMATRIX_INC_DIR) -I$(COREBLAS_INC_DIR)
+
+RLOBJS = TileLU.o RightLooking_incpiv.o
+RTOBJS = TileLU.o RightLooking_incpiv_Task.o
+>>>>>>> refs/remotes/choose_remote_name/master
 PROBJS = TileLU.o Panel_RL_Task.o
 
 all:	RL RT PR

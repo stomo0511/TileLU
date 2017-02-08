@@ -51,7 +51,28 @@ int main(int argc, const char * argv[])
 	// Initialize matrix A
 	A.Set_Rnd( 20140105 );
 
-	A.File_Out("orig");
+	// Definitions and Initialize　END
+	//////////////////////////////////////////////////////////////////////
+
+//    #ifdef DEBUG
+//	A.File_Out("orig");
+//    #endif
+
+	// Timer start
+//	double time = omp_get_wtime();
+	
+	//////////////////////////////////////////////////////////////////////
+	// tile QR variants
+	tileLU(MT,NT,A,L,P);
+	//////////////////////////////////////////////////////////////////////
+	
+	// Timer stop
+//	time = omp_get_wtime() - time;
+//	cout << M << ", " << NB << ", " << IB << ", " << time << endl;
+
+//    #ifdef DEBUG
+//	A.File_Out("orig");
+//    #endif
 	// Definitions and Initialize　END
 	//////////////////////////////////////////////////////////////////////
 
@@ -64,10 +85,12 @@ int main(int argc, const char * argv[])
 	//////////////////////////////////////////////////////////////////////
 	
 	// Timer stop
-//	time = omp_get_wtime() - time;
-//	cout << M << ", " << NB << ", " << IB << ", " << time << endl;
+	time = omp_get_wtime() - time;
+	cout << M << ", " << NB << ", " << IB << ", " << time << endl;
 
-	A.File_Out("factored");
+//    #ifdef DEBUG
+//	A.File_Out("factored");
+//    #endif
 
 	return EXIT_SUCCESS;
 }

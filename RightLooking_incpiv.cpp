@@ -1,7 +1,7 @@
 //
 //  RightLooking
 //
-//  Created by T. Suzuki on 2014/01/05.
+//  Created by T. Suzuki on 2017/02/07.
 //  Copyright (c) 2013 T. Suzuki. All rights reserved.
 //
 
@@ -19,6 +19,8 @@ using namespace std;
 
 void tileLU( const int MT, const int NT, TMatrix& A, TMatrix& L, PivMatrix& P )
 {
+	//////////////////////////////////////////////////////////////////////
+	// Right Looking tile LU with incremental pivoting
 	for (int k=0; k < min(MT,NT); k++ )
 	{
 		#pragma omp parallel
